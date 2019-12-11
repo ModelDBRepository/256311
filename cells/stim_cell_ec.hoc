@@ -1,0 +1,32 @@
+// Dummy cell containing a VecStim object
+// BPG 5-12-08
+
+begintemplate StimCellEC
+public is_art
+public init
+public connect2target
+public soma, stim
+
+objref stim
+
+proc init() {
+	biophys($o1)
+}
+
+create soma
+
+proc biophys() {
+	soma stim = new VecStim()
+	stim.play($o1)
+	stim.delay= 0
+}
+
+obfunc connect2target() { localobj nc //$o1 target point process, optional $o2 returned NetCon
+  	soma nc = new NetCon(stim, $o1)
+  	if (numarg() == 2) { $o2 = nc } // for backward compatibility
+  	return nc
+}
+
+func is_art() { return 0 }
+
+endtemplate StimCellEC

@@ -1,0 +1,411 @@
+// Artificial cells no longer need a default section.
+//Network cell templates
+//   VIPCell
+// Simplified version (BPG 27-9-08)
+//  - geometry and channels from Santhakumar et al 2005
+//  - geometry modified to preserve VCUs different dendrites
+
+begintemplate VIPCCKCell
+public is_art
+public init, topol, basic_shape, subsets, geom, biophys
+public pre_list, connect2target
+
+public soma
+public radProx1, radMed1, radDist1, lmM1, lmt1
+public radProx2, radMed2, radDist2, lmM2, lmt2
+public oriProx1, oriMed1, oriDist1
+public oriProx2, oriMed2, oriDist2
+public all
+
+objref pre_list
+
+proc init() {
+	topol()
+	subsets()
+	geom()
+	biophys()
+	geom_nseg()
+	pre_list = new List()
+	synapses()
+}
+
+create soma
+create radProx1, radMed1, radDist1, lmM1, lmt1
+create radProx2, radMed2, radDist2, lmM2, lmt2
+create oriProx1, oriMed1, oriDist1
+create oriProx2, oriMed2, oriDist2
+
+proc topol() { local i
+	connect radProx1(0), soma(0)
+	connect radMed1(0),  radProx1(1)
+	connect radDist1(0), radMed1(1)
+	connect lmM1(0),     radDist1(1)
+	connect lmt1(0),     lmM1(1)
+	connect radProx2(0), soma(1)
+	connect radMed2(0),  radProx2(1)
+	connect radDist2(0), radMed2(1)
+	connect lmM2(0),     radDist2(1)
+	connect lmt2(0),     lmM2(1)  	
+	connect oriProx1(0), soma(0)
+	connect oriMed1(0),  oriProx1(1)
+	connect oriDist1(0), oriMed1(1)
+	connect oriProx2(0), soma(1)
+	connect oriMed2(0),  oriProx2(1)
+	connect oriDist2(0), oriMed2(1)
+	//basic_shape()
+}
+
+proc basic_shape() {
+	soma     { pt3dclear() pt3dadd(0, 0, 0, 10)      pt3dadd(15, 0, 0, 10)        }
+	radProx1 { pt3dclear() pt3dadd(0, 0, 0, 4)       pt3dadd(-7, 7.50, 0, 4)      }
+	radMed1  { pt3dclear() pt3dadd(-14, 15, 0, 3)    pt3dadd(-21.5, 22.5, 0, 3)   }
+	radDist1 { pt3dclear() pt3dadd(-29, 30, 0, 2)    pt3dadd(-36.5, 37.5, 0, 2)   }
+	lmM1     { pt3dclear() pt3dadd(-44, 45, 0, 1.5)  pt3dadd(-51.5, 52.5, 0, 1.5) }
+	lmt1     { pt3dclear() pt3dadd(-59, 60, 0, 1)    pt3dadd(-74, 75, 0, 1)       }
+	radProx2 { pt3dclear() pt3dadd(15, 0, 0, 4)      pt3dadd(30, 15, 0, 4)        }
+	radMed2  { pt3dclear() pt3dadd(45, 30, 0, 3)     pt3dadd(60, 45, 0, 3)        }
+	radDist2 { pt3dclear() pt3dadd(75, 60, 0, 2)     pt3dadd(82.5, 67.5, 0, 2)    }
+	lmM2     { pt3dclear() pt3dadd(90, 75, 0, 1.5)   pt3dadd(97.5, 82.5, 0, 1.5)  }
+	lmt2     { pt3dclear() pt3dadd(105, 90, 0, 1)    pt3dadd(112.50, 97.5, 0, 1)  }	
+	oriProx1 { pt3dclear() pt3dadd(0, 0, 0, 2)       pt3dadd(-14.5, -14.5, 0, 2)  }
+	oriMed1  { pt3dclear() pt3dadd(-29, -29, 0, 1.5) pt3dadd(-44, -44, 0, 1.5)    }
+	oriDist1 { pt3dclear() pt3dadd(-59, -59, 0, 1)   pt3dadd(-74, -74, 0, 1)      }
+	oriProx2 { pt3dclear() pt3dadd(15, 0, 0, 2)      pt3dadd(30, -14.5, 0, 2)     }
+	oriMed2  { pt3dclear() pt3dadd(45, -29, 0, 1.5)  pt3dadd(60, -44, 0, 1.5)     }
+	oriDist2 { pt3dclear() pt3dadd(75, -59, 0, 1)    pt3dadd(90, -74, 0, 1)       }
+}
+
+objref all
+proc subsets() { local i
+	objref all
+	all = new SectionList()
+	soma     all.append()
+	radProx1 all.append()
+	radMed1  all.append()
+	radDist1 all.append()
+	lmM1     all.append()
+	lmt1     all.append()
+	radProx2 all.append()
+	radMed2  all.append()
+	radDist2 all.append()
+	lmM2     all.append()
+	lmt2     all.append()
+	oriProx1 all.append()
+	oriMed1  all.append()
+	oriDist1 all.append()
+	oriProx2 all.append()
+	oriMed2  all.append()
+	oriDist2 all.append()
+}
+
+proc geom() {
+	forsec all {  }
+	soma     {  L = 20   diam = 10  }
+	radProx1 {  L = 100  diam = 4   }
+	radMed1  {  L = 100  diam = 3   }
+	radDist1 {  L = 200  diam = 2   }
+	lmM1     {  L = 100  diam = 1.5 }
+	lmt1     {  L = 100  diam = 1   }
+	radProx2 {  L = 100  diam = 4   }
+	radMed2  {  L = 100  diam = 3   }
+	radDist2 {  L = 200  diam = 2   }
+	lmM2     {  L = 100  diam = 1.5 }
+	lmt2     {  L = 100  diam = 1   }	
+	oriProx1 {  L = 100  diam = 2   }
+	oriMed1  {  L = 100  diam = 1.5 }
+	oriDist1 {  L = 100  diam = 1   }
+	oriProx2 {  L = 100  diam = 2   }
+	oriMed2  {  L = 100  diam = 1.5 }
+	oriDist2 {  L = 100  diam = 1   }
+}
+
+external lambda_f
+proc geom_nseg() {
+	forsec all { nseg = int((L/(0.1*lambda_f(100))+.9)/2)*2 + 1  }
+}
+
+proc biophys() {
+
+	gna   = 0.18
+	gk    = 0.013
+	gleak = 0.00018/2
+	cap   = 1.3
+	
+	soma {
+		insert ichan2vip
+		gnatbar_ichan2vip = gna  		// Sodium conductance (original 0.015)
+		gkfbar_ichan2vip  = gk		    // Delayed K+ rectifier (fast)
+		gl_ichan2vip      = gleak		// Leak conductance
+		cm                = cap
+	} 
+
+	radProx1 {
+		insert ichan2vip
+		gnatbar_ichan2vip = gna  		// Sodium conductance (original 0.015)
+		gkfbar_ichan2vip  = gk		    // Delayed K+ rectifier (fast)
+		gl_ichan2vip      = gleak		// Leak conductance
+		cm                = cap
+	}		
+
+	radProx2 {
+		insert ichan2vip
+		gnatbar_ichan2vip = gna  		// Sodium conductance (original 0.015)
+		gkfbar_ichan2vip  = gk		    // Delayed K+ rectifier (fast)
+		gl_ichan2vip      = gleak		// Leak conductance
+		cm                = cap
+	}
+
+	radMed1 {
+		insert ichan2vip
+		gnatbar_ichan2vip = gna  		// Sodium conductance (original 0.015)
+		gkfbar_ichan2vip  = gk		    // Delayed K+ rectifier (fast)
+		gl_ichan2vip      = gleak		// Leak conductance
+		cm                = cap
+	}		
+
+	radMed2 {
+		insert ichan2vip
+		gnatbar_ichan2vip = gna  		// Sodium conductance (original 0.015)
+		gkfbar_ichan2vip  = gk		    // Delayed K+ rectifier (fast)
+		gl_ichan2vip      = gleak		// Leak conductance
+		cm                = cap
+	}
+
+	radDist1 {
+		insert ichan2vip
+		gnatbar_ichan2vip = gna  		// Sodium conductance (original 0.015)
+		gkfbar_ichan2vip  = gk		    // Delayed K+ rectifier (fast)
+		gl_ichan2vip      = gleak		// Leak conductance
+		cm                = cap
+	}		
+
+	radDist2 {
+		insert ichan2vip
+		gnatbar_ichan2vip = gna  		// Sodium conductance (original 0.015)
+		gkfbar_ichan2vip  = gk		    // Delayed K+ rectifier (fast)
+		gl_ichan2vip      = gleak		// Leak conductance
+		cm                = cap
+	}
+
+	lmM1 {
+		insert ichan2vip
+		gnatbar_ichan2vip = gna  		// Sodium conductance (original 0.015)
+		gkfbar_ichan2vip  = gk		    // Delayed K+ rectifier (fast)
+		gl_ichan2vip      = gleak		// Leak conductance
+		cm                = cap
+	}		
+
+	lmM2 {
+		insert ichan2vip
+		gnatbar_ichan2vip = gna  		// Sodium conductance (original 0.015)
+		gkfbar_ichan2vip  = gk		    // Delayed K+ rectifier (fast)
+		gl_ichan2vip      = gleak		// Leak conductance
+		cm                = cap
+	}
+
+	lmt1 {
+		insert ichan2vip
+		gnatbar_ichan2vip = gna  		// Sodium conductance (original 0.015)
+		gkfbar_ichan2vip  = gk		    // Delayed K+ rectifier (fast)
+		gl_ichan2vip      = gleak		// Leak conductance
+		cm                = cap
+	}		
+
+	lmt2 {
+		insert ichan2vip
+		gnatbar_ichan2vip = gna  		// Sodium conductance (original 0.015)
+		gkfbar_ichan2vip  = gk		    // Delayed K+ rectifier (fast)
+		gl_ichan2vip      = gleak		// Leak conductance
+		cm                = cap
+	}		
+
+	oriProx1 {
+		insert ichan2vip
+		gnatbar_ichan2vip = gna  		// Sodium conductance (original 0.015)
+		gkfbar_ichan2vip  = gk		    // Delayed K+ rectifier (fast)
+		gl_ichan2vip      = gleak		// Leak conductance
+		cm                = cap
+	}		
+
+	oriProx2 {
+		insert ichan2vip
+		gnatbar_ichan2vip = gna  		// Sodium conductance (original 0.015)
+		gkfbar_ichan2vip  = gk		    // Delayed K+ rectifier (fast)
+		gl_ichan2vip      = gleak		// Leak conductance
+		cm                = cap
+	}		
+
+	oriMed1 {
+		insert ichan2vip
+		gnatbar_ichan2vip = gna  		// Sodium conductance (original 0.015)
+		gkfbar_ichan2vip  = gk		    // Delayed K+ rectifier (fast)
+		gl_ichan2vip      = gleak		// Leak conductance
+		cm                = cap
+	}		
+
+	oriMed2 {
+		insert ichan2vip
+		gnatbar_ichan2vip = gna  		// Sodium conductance (original 0.015)
+		gkfbar_ichan2vip  = gk		    // Delayed K+ rectifier (fast)
+		gl_ichan2vip      = gleak		// Leak conductance
+		cm                = cap
+	}		
+	
+	oriDist1 {
+		insert ichan2vip
+		gnatbar_ichan2vip = gna  		// Sodium conductance (original 0.015)
+		gkfbar_ichan2vip  = gk		    // Delayed K+ rectifier (fast)
+		gl_ichan2vip      = gleak		// Leak conductance
+		cm                = cap
+	}		
+
+	oriDist2 {
+		insert ichan2vip
+		gnatbar_ichan2vip = gna  		// Sodium conductance (original 0.015)
+		gkfbar_ichan2vip  = gk		    // Delayed K+ rectifier (fast)
+		gl_ichan2vip      = gleak		// Leak conductance
+		cm                = cap
+	}		
+
+	forsec all {
+		insert ccanl
+		catau_ccanl = 10		    // Time constant for decay of intracellular Ca2+
+		caiinf_ccanl = 5.e-6		// Steady-state intracellular Ca2+ concentration
+		cao_ccanl = 2
+		
+		insert borgka
+		gkabar_borgka = 0.00015*100	// A-type K+ conductance
+		
+		insert nca  			    // N-type Ca2+ conductance
+		gncabar_nca = 0.0008  		// check to modify- original 0.004
+		
+		insert lca 
+		glcabar_lca = 0.005	    // L-type Ca2+ conductance
+		
+		insert gskch
+		gskbar_gskch = 0.000002*2*0.01   // Ca2+-dependent K (SK) conductance
+		
+		insert mykca
+		gkbar_mykca = 0.0002*10*10		// Ca2+ and Voltage-dependent K+ (BK) conductance
+
+		Ra   = 100
+		enat = 55
+		ekf  = -85
+		ek   = -85
+		elca = 130
+		enca = 130
+		eks  = -85
+		
+		el_ichan2vip = -61.4
+	}
+}
+
+obfunc connect2target() { localobj nc //$o1 target point process, optional $o2 returned NetCon
+	soma nc = new NetCon(&v(1), $o1)
+	nc.threshold = -10
+	if (numarg() == 2) { $o2 = nc } // for backward compatibility
+	return nc
+}
+
+objref syn_
+
+proc synapses_EC() {
+	/* E0 */   lmM1 syn_ = new MyExp2Syn(0.5)  pre_list.append(syn_)	// AMPA		EC
+	syn_.tau1 = 2.0
+	syn_.tau2 = 6.3
+	syn_.e    = 0
+	/* E1 */   lmM2 syn_ = new MyExp2Syn(0.5)  pre_list.append(syn_)	// AMPA		EC
+	syn_.tau1 = 2.0
+	syn_.tau2 = 6.3
+	syn_.e    = 0
+}
+
+proc synapses_CA3() {
+	/* E2 */   radMed1 syn_ = new MyExp2Syn(0.5)  pre_list.append(syn_)	// AMPA		CA3 Shaffer collateral
+	syn_.tau1 = 2.0
+	syn_.tau2 = 6.3
+	syn_.e    = 0
+	/* E3 */   radMed2 syn_ = new MyExp2Syn(0.5)  pre_list.append(syn_)	// AMPA		CA3 Shaffer collateral
+	syn_.tau1 = 2.0
+	syn_.tau2 = 6.3
+	syn_.e    = 0
+	/* E4 */   radProx1 syn_ = new MyExp2Syn(0.5)  pre_list.append(syn_)	// AMPA		CA3 Shaffer collateral
+	syn_.tau1 = 2.0
+	syn_.tau2 = 6.3
+	syn_.e    = 0
+	/* E5 */   radProx2 syn_ = new MyExp2Syn(0.5)  pre_list.append(syn_)	// AMPA		CA3 Shaffer collateral
+	syn_.tau1 = 2.0
+	syn_.tau2 = 6.3
+	syn_.e    = 0
+}
+
+proc synapses_PC() {
+	/* E6 */   oriProx1 syn_ = new MyExp2Syn(0.5)  pre_list.append(syn_)	// AMPA		PC
+	syn_.tau1 = 0.5
+	syn_.tau2 = 3
+	syn_.e    = 0
+	/* E7 */   oriProx2 syn_ = new MyExp2Syn(0.5)  pre_list.append(syn_)	// AMPA		PC
+	syn_.tau1 = 0.5
+	syn_.tau2 = 3
+	syn_.e    = 0
+}
+
+proc synapses_IN() {
+	/* I8 */   soma syn_ = new MyExp2Syn(0.5)  pre_list.append(syn_)	// GABA-A	Basket cell
+	syn_.tau1 = 0.29
+	syn_.tau2 = 2.67
+	syn_.e    = -75
+	/* I9 */   radMed1 syn_ = new MyExp2Syn(0.5)  pre_list.append(syn_)	// GABA-A	Bistratified cell
+	syn_.tau1 = 0.29
+	syn_.tau2 = 2.67
+	syn_.e    = -75
+	/* I10 */   radMed2 syn_ = new MyExp2Syn(0.5)  pre_list.append(syn_)	// GABA-A	Bistratified cell
+	syn_.tau1 = 0.29
+	syn_.tau2 = 2.67
+	syn_.e    = -75
+	/* I11 */   lmM1 syn_ = new MyExp2Syn(0.5)  pre_list.append(syn_)	// GABA-A	OLM cell
+	syn_.tau1 = 0.73
+	syn_.tau2 = 20.20
+	syn_.e    = -75
+	/* I12 */   lmM2 syn_ = new MyExp2Syn(0.5)  pre_list.append(syn_)	// GABA-A	OLM cell
+	syn_.tau1 = 0.73
+	syn_.tau2 = 20.20
+	syn_.e    = -75    	    	 	    	
+	/* I13 */   soma syn_ = new MyExp2Syn(0.5)  pre_list.append(syn_)	// GABA-A	VIP/CCK cell
+	syn_.tau1 = 0.43
+	syn_.tau2 = 4.49
+	syn_.e    = -75
+}
+
+proc synapses_SEP() {
+	/* I12 */   oriProx1 syn_ = new MyExp2Syn(0.5)  pre_list.append(syn_)	// GABA-A	Septum
+	syn_.tau1 = 1
+	syn_.tau2 = 8
+	syn_.e    = -75
+	/* I13 */   oriProx2 syn_ = new MyExp2Syn(0.5)  pre_list.append(syn_)	// GABA-A	Septum
+	syn_.tau1 = 1
+	syn_.tau2 = 8
+	syn_.e    = -75
+	/* I14 */   oriProx1 syn_ = new MyExp2Syn(0.5)  pre_list.append(syn_)	// GABA-B	Septum
+	syn_.tau1 = 35
+	syn_.tau2 = 100
+	syn_.e    = -75
+	/* I15 */   oriProx2 syn_ = new MyExp2Syn(0.5)  pre_list.append(syn_)	// GABA-B	Septum
+	syn_.tau1 = 35
+	syn_.tau2 = 100
+	syn_.e    = -75
+}
+
+
+proc synapses() {
+  synapses_EC()
+  synapses_CA3()
+  synapses_PC()
+  synapses_IN()
+  synapses_SEP()
+}
+
+
+func is_art() { return 0 }
+
+endtemplate VIPCCKCell

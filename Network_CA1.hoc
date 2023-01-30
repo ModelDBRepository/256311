@@ -1,14 +1,9 @@
 // CA1 Netwrok with grid-like inputs from EC LIII and Place-like Inputs from CA3
 
-
-// Based on Turi et al
+// Based on Turi et al, 2019
 // Neuron, 2019, DOI:https://doi.org/10.1016/j.neuron.2019.01.009
 
 {load_file("nrngui.hoc")}  // load the GUI and standard run libraries
-
-//objref cvode
-//cvode = new CVode()
-//cvode.active(1)
 
 seed1 = n_trials
 seed2 = n_runs*n_trials

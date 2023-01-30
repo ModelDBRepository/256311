@@ -1,12 +1,13 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 """
-Created on Wed Mar 15 15:21:06 2017
+Created on Wed Mar 15 15:21:06 2017.
 
 @author: spiros
 """
 
-def peakdet(v, delta, threshold, x = None):
+
+def peakdet(v, delta, threshold, x=None):
     import sys
     import numpy as np
     """

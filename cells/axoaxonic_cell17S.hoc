@@ -398,11 +398,11 @@ proc synapses_SEP() {
 }
 
 proc synapses() {
-  synapses_EC()
-  synapses_CA3()
-  synapses_PC()
-  synapses_IN()
-  synapses_SEP()
+synapses_EC()
+synapses_CA3()
+synapses_PC()
+synapses_IN()
+synapses_SEP()
 }
 
 func is_art() { return 0 }
